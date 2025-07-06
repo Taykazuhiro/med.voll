@@ -1,7 +1,8 @@
 package med.voll.api.domain.consulta;
 
 import jakarta.validation.Valid;
-import med.voll.api.domain.consulta.validacoes.IValidadorDeAgendamentoConsulta;
+import med.voll.api.domain.consulta.validacoes.agendamento.IValidadorDeAgendamentoConsulta;
+import med.voll.api.domain.consulta.validacoes.cancelamento.IValidadorDeCancelamentosConsultas;
 import med.voll.api.domain.medico.Medico;
 import med.voll.api.domain.medico.MedicoRepository;
 import med.voll.api.domain.paciente.PacienteRepository;
@@ -22,6 +23,9 @@ public class AgendaDeConsultas {
 
     @Autowired
     private List<IValidadorDeAgendamentoConsulta> validadores;
+
+    @Autowired
+    private List<IValidadorDeCancelamentosConsultas> validadoresCancelamento;
 
     public DadosDetalhamentoConsulta agendar(@Valid DadosAgendamentoConsulta dados){
         if(!pacienteRepository.existsById(dados.idPaciente())){
@@ -62,6 +66,7 @@ public class AgendaDeConsultas {
         if (dados.motivo() == null){
             throw new ValidacaoException("Para cancelar a idConsulta é preciso informar o motivo");
         }
+        validadoresCancelamento.forEach(v-> v.validar(dados));
 
         var consulta = consultaRepository.getReferenceById(dados.idConsulta());
         consulta.cancelar(dados.motivo());

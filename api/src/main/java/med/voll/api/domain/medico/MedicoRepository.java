@@ -15,7 +15,8 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
 
     @Query("""
             SELECT m FROM Medico m
-            WHERE m.ativo=true
+            WHERE
+            m.ativo=true
             AND
             m.especialidade = :especialidade
             AND
@@ -23,6 +24,8 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
                 select c.medico.id FROM Consulta c
                 WHERE
                 c.data = :data
+                AND
+                c.motivoCancelamento is null
             )
             ORDER BY rand()
             LIMIT 1
